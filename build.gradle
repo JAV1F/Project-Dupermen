@@ -1,0 +1,120 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            name = "" +
+                    ""
+            url = "https://files.minecraftforge.net/maven"
+        }
+        maven {
+            name = 'SpongePowered'
+            url = 'https://repo.spongepowered.org/maven'
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
+    }
+}
+
+apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+version = "1.08"
+group = "com.ja.dupermen"
+
+minecraft {
+    version = project.forgeVersion
+    runDir = "run"
+    mappings = project.mcpVersion
+    coreMod = 'com.ja.dupermen.mixin.MixinLoader'
+    makeObfSourceJar = false
+}
+
+repositories {
+    maven {
+        name = 'impactdevelopment-repo'
+        url = 'https://impactdevelopment.github.io/maven/'
+    }
+    maven {
+        name = "jitpack.io"
+        url = "https://jitpack.io"
+    }
+    maven {
+        name = 'spongepowered-repo'
+        url = 'https://repo.spongepowered.org/repository/maven-public/'
+    }
+    maven {
+        name = 'swt-repo'
+        url = "http://maven-eclipse.github.io/maven"
+    }
+
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    compile("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
+        exclude module: 'commons-io'
+        exclude module: 'gson'
+        exclude module: 'guava'
+        exclude module: 'launchwrapper'
+        exclude module: 'log4j-core'
+    }
+    compile group: "com.googlecode.json-simple", name: "json-simple", version: "1.1.1"
+}
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
+    from(sourceSets.main.resources.srcDirs) {
+        include "mcmod.info"
+        expand "version": project.version, "mcversion": project.minecraft.version
+    }
+
+    from(sourceSets.main.resources.srcDirs) {
+        exclude "mcmod.info"
+    }
+
+    rename "(.+_at.cfg)", 'META-INF/$1'
+}
+
+mixin {
+    defaultObfuscationEnv searge
+    add sourceSets.main, 'mixins.dupermen.refmap.json'
+}
+
+reobf {
+    shadowJar {
+        mappingType = 'SEARGE'
+        classpath = sourceSets.main.compileClasspath
+    }
+}
+
+jar {
+    manifest {
+        attributes(
+                'MixinConfigs': 'mixins.dupermen.json',
+                'tweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
+                'TweakOrder': 0,
+                'FMLCorePluginContainsFMLMod': 'true',
+                'FMLCorePlugin': 'com.ja.dupermen.mixin.MixinLoader',
+                'ForceLoadAsMod': 'true',
+                'FMLAT': 'dupermen_at.cfg'
+        )
+    }
+}
+
+shadowJar {
+    dependencies {
+        include(dependency('org.spongepowered:mixin'))
+        include(dependency('com.googlecode.json-simple:json-simple:1.1.1'))
+    }
+    exclude 'dummyThing', 'LICENSE.txt', 'org/**/*.html', 'META-INF/maven/**'
+    classifier = 'release'
+}
+
+build.dependsOn(shadowJar)

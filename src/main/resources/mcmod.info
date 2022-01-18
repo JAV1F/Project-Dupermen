@@ -1,0 +1,16 @@
+[
+  {
+    "modid": "dupermen",
+    "name": "Dupermen Client",
+    "description": "",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "",
+    "updateUrl": "",
+    "authorList": [],
+    "credits": "",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]

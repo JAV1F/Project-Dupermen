@@ -1,0 +1,10 @@
+{
+  "required": true,
+  "compatibilityLevel": "JAVA_8",
+  "package": "com.ja.dupermen.mixin.mixins",
+  "refmap": "mixins.dupermen.refmap.json",
+  "mixins": [
+    "MixinEntityPlayerSP",
+    "MixinNetworkManager"
+  ]
+}
