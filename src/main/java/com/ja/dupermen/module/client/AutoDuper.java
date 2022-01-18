@@ -80,6 +80,8 @@ public class AutoDuper extends Module {
             }
         }
 
+        if ((riding instanceof AbstractChestHorse || donkey != null) && timeout.hasReached(16000) && cancel) cancel = false;
+
         if (riding instanceof AbstractChestHorse && woodButton != null && donkey != null && chest != null && ((EntityDonkey) riding).hasChest() && timeout.hasReached((long) (delay.getDVal() * 1000)) && cancel) {
             ContainerHorseChest horseChest = ((EntityDonkey) riding).horseChest;
             if (mc.currentScreen instanceof GuiChest) {
