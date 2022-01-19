@@ -40,7 +40,7 @@ public class AutoDuper extends Module {
     Setting delay = new Setting("Delay", 1, 0, 6, false);
 
     public AutoDuper() {
-        super("Auto Duper", "Automaticly duplicates items for you", Category.MISCELLANEOUS);
+        super("Auto Duper", "Automaticly duplicates items for you", Category.DUPERMEN);
         addSetting(mode);
         addSetting(interactRange);
         addSetting(timeoutTime);
