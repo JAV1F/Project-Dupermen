@@ -37,10 +37,10 @@ public class AutoDuper extends Module {
     });
     Setting interactRange = new Setting("Interact Range", 5, 0, 6, false);
     Setting timeoutTime = new Setting("Timeout", 5, 0, 6, false);
-    Setting delay = new Setting("Delay", 3, 0, 6, false);
+    Setting delay = new Setting("Delay", 1, 0, 6, false);
 
     public AutoDuper() {
-        super("Auto Duper", "Automaticly duplicates items for you", Category.DUPERMEN, Keyboard.KEY_M);
+        super("Auto Duper", "Automaticly duplicates items for you", Category.MISCELLANEOUS);
         addSetting(mode);
         addSetting(interactRange);
         addSetting(timeoutTime);
@@ -54,7 +54,7 @@ public class AutoDuper extends Module {
     }
 
     public void onUpdate() {
-        if (fullNullCheck() || mode.getMVal() == 1 || !timeout.hasReached((long) (timeoutTime.getDVal() * 1000))) return;
+        if (fullNullCheck() || mode.getMVal() == 1) return;
         Entity riding = mc.player.ridingEntity;
         EntityDonkey donkey = null;
         EntityMinecart minecart = null;
@@ -75,12 +75,19 @@ public class AutoDuper extends Module {
                 if (donkey == null) cancel = true; else timeout.reset();
                 mc.player.connection.sendPacket(new CPacketAnimation(EnumHand.MAIN_HAND));
                 mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(stoneButton, EnumFacing.UP, EnumHand.MAIN_HAND, 0, 0, 0));
-            } else if (cancel && donkey != null) {
+            } else if (cancel && woodButton != null && donkey != null) {
                 mc.player.connection.sendPacket(new CPacketUseEntity(donkey, EnumHand.MAIN_HAND));
+                mc.player.connection.sendPacket(new CPacketAnimation(EnumHand.MAIN_HAND));
+                mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(woodButton, EnumFacing.UP, EnumHand.MAIN_HAND, 0, 0, 0));
             }
+            timeout.reset();
         }
 
-        if ((riding instanceof AbstractChestHorse || donkey != null) && timeout.hasReached(16000) && cancel) cancel = false;
+        if ((riding instanceof AbstractChestHorse || donkey != null) && woodButton != null && timeout.hasReached(40000) && cancel) {
+            mc.player.connection.sendPacket(new CPacketAnimation(EnumHand.MAIN_HAND));
+            mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(woodButton, EnumFacing.UP, EnumHand.MAIN_HAND, 0, 0, 0));
+        }
+        if ((riding instanceof AbstractChestHorse || donkey != null) && timeout.hasReached(60000) && cancel) cancel = false;
 
         if (riding instanceof AbstractChestHorse && woodButton != null && donkey != null && chest != null && ((EntityDonkey) riding).hasChest() && timeout.hasReached((long) (delay.getDVal() * 1000)) && cancel) {
             ContainerHorseChest horseChest = ((EntityDonkey) riding).horseChest;
@@ -105,6 +112,8 @@ public class AutoDuper extends Module {
                         if (!(item instanceof ItemBlock && ((ItemBlock) item).block instanceof BlockShulkerBox))
                             continue;
                         mc.playerController.windowClick(container.inventorySlots.windowId, i, 0, ClickType.QUICK_MOVE, mc.player);
+                        item = container.horseInventory.getStackInSlot(i).item;
+                        if (item instanceof ItemBlock && ((ItemBlock) item).block instanceof BlockShulkerBox) mc.playerController.windowClick(container.inventorySlots.windowId, i, 0, ClickType.THROW, mc.player);
                         return;
                     }
                     mc.player.connection.sendPacket(new CPacketAnimation(EnumHand.MAIN_HAND));
