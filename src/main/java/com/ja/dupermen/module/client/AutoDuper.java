@@ -76,9 +76,9 @@ public class AutoDuper extends Module {
                 mc.player.connection.sendPacket(new CPacketAnimation(EnumHand.MAIN_HAND));
                 mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(stoneButton, EnumFacing.UP, EnumHand.MAIN_HAND, 0, 0, 0));
             } else if (cancel && woodButton != null && donkey != null) {
-                mc.player.connection.sendPacket(new CPacketUseEntity(donkey, EnumHand.MAIN_HAND));
                 mc.player.connection.sendPacket(new CPacketAnimation(EnumHand.MAIN_HAND));
                 mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(woodButton, EnumFacing.UP, EnumHand.MAIN_HAND, 0, 0, 0));
+                mc.player.connection.sendPacket(new CPacketUseEntity(donkey, EnumHand.MAIN_HAND));
             }
             timeout.reset();
         }
