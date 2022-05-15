@@ -46,6 +46,7 @@ public class AutoDuper extends Module {
         addSetting(interactRange);
         addSetting(timeoutTime);
         addSetting(delay);
+        addSetting(dismount);
     }
     boolean cancel;
     Timer timeout = new Timer();
