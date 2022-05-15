@@ -38,6 +38,7 @@ public class AutoDuper extends Module {
     Setting interactRange = new Setting("Interact Range", 5, 0, 6, false);
     Setting timeoutTime = new Setting("Timeout", 5, 0, 6, false);
     Setting delay = new Setting("Delay", 1, 0, 6, false);
+    Setting dismount = new Setting("Dismount",false);
 
     public AutoDuper() {
         super("Auto Duper", "Automaticly duplicates items for you", Category.DUPERMEN);
@@ -78,7 +79,7 @@ public class AutoDuper extends Module {
             } else if (cancel && woodButton != null && donkey != null) {
                 mc.player.connection.sendPacket(new CPacketAnimation(EnumHand.MAIN_HAND));
                 mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(woodButton, EnumFacing.UP, EnumHand.MAIN_HAND, 0, 0, 0));
-                mc.player.connection.sendPacket(new CPacketUseEntity(donkey, EnumHand.MAIN_HAND));
+                mount(donkey);
             }
             timeout.reset();
         }
@@ -102,8 +103,9 @@ public class AutoDuper extends Module {
                 }
                 mc.player.connection.sendPacket(new CPacketAnimation(EnumHand.MAIN_HAND));
                 mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(woodButton, EnumFacing.UP, EnumHand.MAIN_HAND, 0, 0, 0));
-                mc.player.connection.sendPacket(new CPacketUseEntity(donkey, EnumHand.MAIN_HAND));
+                mount(donkey);
                 mc.currentScreen.onGuiClosed();
+                mc.player.connection.sendPacket(new CPacketCloseWindow(container.inventorySlots.windowId));
             } else {
                 if (mc.currentScreen instanceof GuiScreenHorseInventory) {
                     GuiScreenHorseInventory container = (GuiScreenHorseInventory) mc.currentScreen;
@@ -125,6 +127,14 @@ public class AutoDuper extends Module {
             }
             timeout.reset();
         }
+    }
+
+    public void mount(Entity entity) {
+        if (dismount.getBVal()) {
+            mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING));
+            mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
+        }
+        mc.player.connection.sendPacket(new CPacketUseEntity(entity, EnumHand.MAIN_HAND));
     }
 
     public boolean isFrozen(Entity entity) {
